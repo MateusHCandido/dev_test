@@ -7,9 +7,10 @@
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true
+    "experimentalDecorators": true,  // Habilita o suporte a decorators
+    "emitDecoratorMetadata": true,   // Emite metadados para decorators
+    "moduleResolution": "node",
+    "skipLibCheck": true,
   },
   "include": ["src/**/*", "src/db.test.ts"],
   "exclude": ["node_modules"]

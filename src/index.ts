@@ -3,11 +3,13 @@ import express from 'express';
 import { DataSource } from 'typeorm';
 import { User } from './entity/User';
 import { Post } from './entity/Post';
+import { createPost } from './service/postService/createPost';
+import { createUser } from './service/userService/createUser';
 
 const app = express();
 app.use(express.json());
 
-const AppDataSource = new DataSource({
+export const AppDataSource = new DataSource({
   type: "mysql",
   host: process.env.DB_HOST || "localhost",
   port: 3306,
@@ -34,11 +36,36 @@ const initializeDatabase = async () => {
 initializeDatabase();
 
 app.post('/users', async (req, res) => {
-// Crie o endpoint de users
+  //Solicita os dados de requisição de criação de usuário
+  const { firstName, lastName, email} = req.body;
+
+  //Tenta criar usuário
+  try{
+    const newUser = await createUser(firstName, lastName, email);
+    res.status(201).json(newUser); //Reorna o usuário criado 
+  }catch(error){
+    //Retorna código 400 com mensagem de erro
+    console.error(error);
+    res.status(400).json({ error: 'The user was not created due to unfilled fields'});
+  }
+
 });
 
+
+//Endpoint para criar uma postagem
 app.post('/posts', async (req, res) => {
-// Crie o endpoint de posts
+  //Solicita os dados de requisição de criação de postagem
+  const { title, description, userId } = req.body;
+
+  try {
+    //Chama a função de serviço para criar o post
+    const newPost = await createPost(title, description, userId);
+    res.status(201).json(newPost); // Retorna o post criado
+  } catch (error) {
+    //Retorna código 400 com mensagem de erro
+    console.error(error);
+    res.status(400).json({ error: 'Post was not created due to unfilled fields or unknown user' });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
